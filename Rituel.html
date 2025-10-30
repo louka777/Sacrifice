@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>La Nuit du Pacte — Rituel</title>
+<style>
+  body{
+    background: radial-gradient(#2b2118,#0f0b08);
+    color:#e9d8c7;
+    font-family: "Cormorant Garamond", "Cinzel", serif;
+    padding:24px;
+    display:flex;
+    min-height:100vh;
+    align-items:center;
+    justify-content:center;
+  }
+  .card{
+    max-width:760px;
+    background: linear-gradient(180deg, rgba(255,250,240,0.03), rgba(0,0,0,0.25));
+    border:1px solid rgba(233,216,199,0.06);
+    padding:28px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    border-radius:8px;
+  }
+  h1{ text-align:center; letter-spacing:2px; margin:0 0 8px; font-size:22px;}
+  p.lead{ text-align:center; opacity:0.9; margin-top:4px; margin-bottom:18px;}
+  .ritualText{
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(255,255,255,0.03);
+    padding:18px;
+    min-height:120px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:18px;
+    line-height:1.45;
+    border-radius:6px;
+    transition: opacity 0.8s ease;
+  }
+  .controls{ display:flex; gap:10px; margin-top:14px; justify-content:center;}
+  button{ background:#7a4b35; color:#fff; border:none; padding:10px 14px; border-radius:6px; cursor:pointer;}
+  button.secondary{ background:transparent; border:1px solid rgba(255,255,255,0.06);}
+  .hint{ text-align:center; margin-top:12px; color:#cfc1ad; font-size:13px;}
+  #afterText{
+    margin-top:18px;
+    text-align:center;
+    font-style:italic;
+    opacity:0;
+    transition: opacity 1.6s ease;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>La Nuit du Pacte — Rituel</h1>
+    <p class="lead">Approche-toi. Pose ta main sur le grimoire et clique pour connaître ta marque.  
+    Tu devras jouer cet effet pendant 24 h.</p>
+
+    <div id="ritualText" class="ritualText">Le grimoire attend ton souffle...</div>
+
+    <div class="controls">
+      <button id="drawBtn">Effectuer ton sacrifice</button>
+      <button id="copyBtn" class="secondary" disabled>Copier ma malédiction</button>
+    </div>
+
+    <p id="afterText">Colle ta malédiction dans le chat et joue-la dès maintenant...<br>La suite arrivera une fois que tout le monde aura fait son sacrifice à la nuit.</p>
+
+    <p class="hint">Chaque joueur ne doit tirer qu’une seule fois son sacrifice.</p>
+  </div>
+
+<script>
+const entries = [
+  "Quand la lune monte, ton ombre chuchote ton nom à l’envers.",
+  "Les miroirs te renvoient un vide jusqu’à l’aube.",
+  "Le parfum du sang te suit, même sous la pluie.",
+  "Tes mains se couvrent de poussière chaque fois que tu trahis la parole du cercle.",
+  "Tes cheveux s’enflammeront de rouge sous la lumière du jour.",
+  "Les flammes vacillent à ton passage, même sans vent.",
+  "Les animaux te fixent comme s’ils se souvenaient d’un serment ancien.",
+  "Ton regard fait tressaillir ceux qui croient te connaître ; tu craches à chaque fois qu’un homme soutient ton regard.",
+  "Tu ne pourras plus mentir sans que ton œil s’assombrisse comme une braise.",
+  "Le goût du fer envahit ta bouche chaque fois qu’on prononce ton nom.",
+  "Tes mots attirent les corbeaux ; ils récitent ton nom à la tombée.",
+  "Tes rêves se lient à ceux d’une inconnue, et au réveil tu ignores ce qui appartint au sien."
+];
+
+const drawBtn = document.getElementById('drawBtn');
+const ritualText = document.getElementById('ritualText');
+const copyBtn = document.getElementById('copyBtn');
+const afterText = document.getElementById('afterText');
+
+drawBtn.addEventListener('click', () => {
+  const idx = Math.floor(Math.random()*entries.length);
+  const text = entries[idx];
+  ritualText.textContent = text;
+  copyBtn.disabled = false;
+  ritualText.style.transform = "scale(0.995)";
+  setTimeout(()=> ritualText.style.transform = "scale(1)", 180);
+
+  // fait apparaître le texte final
+  setTimeout(()=> { afterText.style.opacity = 1; }, 800);
+});
+
+copyBtn.addEventListener('click', async () => {
+  const text = ritualText.textContent;
+  try{
+    await navigator.clipboard.writeText(text);
+    copyBtn.textContent = "Copié ✓";
+    setTimeout(()=> copyBtn.textContent = "Copier ma malédiction", 2200);
+  } catch(e){
+    alert("Impossible de copier automatiquement — sélectionne le texte et fais Copier manuellement.");
+  }
+});
+</script>
+</body>
+</html>
