@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>La Nuit du Pacte — Rituel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Cormorant+Garamond&display=swap" rel="stylesheet">
 <style>
   body{
     background: radial-gradient(#2b2118,#0f0b08);
@@ -37,7 +38,8 @@
     font-size:18px;
     line-height:1.45;
     border-radius:6px;
-    transition: opacity 0.8s ease;
+    transition: opacity 0.5s ease, transform 0.2s ease;
+    opacity: 1;
   }
   .controls{ display:flex; gap:10px; margin-top:14px; justify-content:center;}
   button{ background:#7a4b35; color:#fff; border:none; padding:10px 14px; border-radius:6px; cursor:pointer;}
@@ -92,24 +94,31 @@ const copyBtn = document.getElementById('copyBtn');
 const afterText = document.getElementById('afterText');
 
 drawBtn.addEventListener('click', () => {
-  const idx = Math.floor(Math.random()*entries.length);
+  const idx = Math.floor(Math.random() * entries.length);
   const text = entries[idx];
-  ritualText.textContent = text;
-  copyBtn.disabled = false;
-  ritualText.style.transform = "scale(0.995)";
-  setTimeout(()=> ritualText.style.transform = "scale(1)", 180);
 
-  // fait apparaître le texte final
-  setTimeout(()=> { afterText.style.opacity = 1; }, 800);
+  // Animation fade out / fade in
+  ritualText.style.opacity = 0;
+  setTimeout(() => {
+    ritualText.textContent = text;
+    ritualText.style.opacity = 1;
+  }, 250);
+
+  copyBtn.disabled = false;
+
+  ritualText.style.transform = "scale(0.995)";
+  setTimeout(() => ritualText.style.transform = "scale(1)", 180);
+
+  setTimeout(() => { afterText.style.opacity = 1; }, 800);
 });
 
 copyBtn.addEventListener('click', async () => {
   const text = ritualText.textContent;
-  try{
+  try {
     await navigator.clipboard.writeText(text);
     copyBtn.textContent = "Copié ✓";
     setTimeout(()=> copyBtn.textContent = "Copier ma malédiction", 2200);
-  } catch(e){
+  } catch(e) {
     alert("Impossible de copier automatiquement — sélectionne le texte et fais Copier manuellement.");
   }
 });
