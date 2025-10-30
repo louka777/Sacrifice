@@ -15,6 +15,7 @@
     min-height:100vh;
     align-items:center;
     justify-content:center;
+    transition: background 0.8s ease, color 0.8s ease;
   }
   .card{
     max-width:760px;
@@ -23,6 +24,7 @@
     padding:28px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     border-radius:8px;
+    transition: opacity 0.8s ease;
   }
   h1{ text-align:center; letter-spacing:2px; margin:0 0 8px; font-size:22px;}
   p.lead{ text-align:center; opacity:0.9; margin-top:4px; margin-bottom:18px;}
@@ -43,6 +45,7 @@
   }
   .controls{ display:flex; gap:10px; margin-top:14px; justify-content:center;}
   button{ background:#7a4b35; color:#fff; border:none; padding:10px 14px; border-radius:6px; cursor:pointer;}
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
   button.secondary{ background:transparent; border:1px solid rgba(255,255,255,0.06);}
   .hint{ text-align:center; margin-top:12px; color:#cfc1ad; font-size:13px;}
   #afterText{
@@ -88,30 +91,77 @@ const entries = [
   "T’es pas laisse de la cendre là où tu marches."
 ];
 
+// =========================
+// CONFIGURATION MODE
+// =========================
+const TEST_MODE = true; // true = tirage libre / répétable, false = tirage unique pour 12 joueurs
+let shuffledEntries = [];
+let currentIndex = 0;
+
+if (!TEST_MODE) {
+  shuffledEntries = shuffle([...entries]);
+}
+
+// Fonction pour mélanger un tableau (Fisher-Yates)
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// =========================
+// Éléments DOM
+// =========================
 const drawBtn = document.getElementById('drawBtn');
 const ritualText = document.getElementById('ritualText');
 const copyBtn = document.getElementById('copyBtn');
 const afterText = document.getElementById('afterText');
+const body = document.body;
+const card = document.querySelector('.card');
 
+// =========================
+// Événement clic
+// =========================
 drawBtn.addEventListener('click', () => {
-  const idx = Math.floor(Math.random() * entries.length);
-  const text = entries[idx];
+  drawBtn.disabled = true; // bloque le bouton après un tirage
 
-  // Animation fade out / fade in
-  ritualText.style.opacity = 0;
+  // écran noir dramatique
+  card.style.opacity = 0;
+  body.style.background = "#000";
+  body.style.color = "#000";
+
   setTimeout(() => {
+    let text;
+    if (TEST_MODE) {
+      const idx = Math.floor(Math.random() * entries.length);
+      text = entries[idx]; // tirage aléatoire libre
+    } else {
+      if (currentIndex >= shuffledEntries.length) return; // toutes tirées
+      text = shuffledEntries[currentIndex];
+      currentIndex++;
+    }
+
     ritualText.textContent = text;
-    ritualText.style.opacity = 1;
-  }, 250);
 
-  copyBtn.disabled = false;
+    // réaffichage de la carte et du texte
+    card.style.opacity = 1;
+    body.style.background = "radial-gradient(#2b2118,#0f0b08)";
+    body.style.color = "#e9d8c7";
 
-  ritualText.style.transform = "scale(0.995)";
-  setTimeout(() => ritualText.style.transform = "scale(1)", 180);
+    copyBtn.disabled = false;
+    afterText.style.opacity = 1;
 
-  setTimeout(() => { afterText.style.opacity = 1; }, 800);
+    ritualText.style.transform = "scale(0.995)";
+    setTimeout(() => ritualText.style.transform = "scale(1)", 180);
+
+  }, 800); // durée écran noir
 });
 
+// =========================
+// Bouton copier
+// =========================
 copyBtn.addEventListener('click', async () => {
   const text = ritualText.textContent;
   try {
